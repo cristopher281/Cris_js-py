@@ -1,0 +1,32 @@
+name: Verificar Nombres de Archivos
+on: [workflow_call]
+
+jobs:
+  check-js-files:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Listar archivos JavaScript
+        run: |
+          echo "📁 Archivos JavaScript encontrados:"
+          cd ejercicios-js/
+          for file in *.js; do
+            if [ -f "$file" ]; then
+              echo "✅ $file"
+            fi
+          done
+
+  check-py-files:
+    needs: check-js-files
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Listar archivos Python
+        run: |
+          echo "📁 Archivos Python encontrados:"
+          cd ejercicios-py/
+          for file in *.py; do
+            if [ -f "$file" ]; then
+              echo "✅ $file"
+            fi
+          done

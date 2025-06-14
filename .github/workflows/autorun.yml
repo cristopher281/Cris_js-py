@@ -1,0 +1,65 @@
+name: Ejecutar Archivos
+on: [workflow_call]
+
+jobs:
+  run-js:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Ejecutar archivos JavaScript
+        run: |
+          cd ejercicios-js/
+          for file in *.js; do
+            if [ -f "$file" ]; then
+              echo "🔍 Ejecutando $file..."
+              echo "----------------------------------------"
+              if node "$file"; then
+                echo "✅ $file ejecutado correctamente"
+              else
+                echo "❌ Error en la ejecución de $file"
+                exit 1
+              fi
+              echo "----------------------------------------"
+            fi
+          done
+
+  run-py:
+    needs: run-js
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verificar y crear requirements.txt
+        run: |
+          cd ejercicios-py/
+          if [ ! -f requirements.txt ]; then
+            echo "tabulate==0.9.0" > requirements.txt
+          fi
+      - name: Instalar dependencias Python
+        run: |
+          cd ejercicios-py/
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Ejecutar archivos Python
+        run: |
+          cd ejercicios-py/
+          for file in *.py; do
+            if [ -f "$file" ]; then
+              echo "🔍 Ejecutando $file..."
+              echo "----------------------------------------"
+              if python "$file"; then
+                echo "✅ $file ejecutado correctamente"
+              else
+                echo "❌ Error en la ejecución de $file"
+                exit 1
+              fi
+              echo "----------------------------------------"
+            fi
+          done
